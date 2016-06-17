@@ -13,8 +13,8 @@
 
 #define HIGHT self.bounds.origin.y
 
-static CGFloat const chageImageTime = 3.0;
-static NSUInteger currentImage = 1;//记录中间图片的下标,开始总是为1
+static CGFloat const chageImageTime = 1;
+static NSUInteger currentImage = 1; //记录中间图片的下标,开始总是为1
 @interface FXJScrollView ()
 {
     UIImageView * _leftImageView;
@@ -33,7 +33,7 @@ static NSUInteger currentImage = 1;//记录中间图片的下标,开始总是为
 
 @implementation FXJScrollView
 
-#pragma mark - 自由指定广告所占的frame
+#pragma mark -
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -54,7 +54,8 @@ static NSUInteger currentImage = 1;//记录中间图片的下标,开始总是为
         [self addSubview:_centerImageView];
         _rightImageView = [[UIImageView alloc]initWithFrame:CGRectMake(UISCREENWIDTH*2, 0, UISCREENWIDTH, UISCREENHEIGHT)];
         [self addSubview:_rightImageView];
-            _pageControl = [[UIPageControl alloc]init];
+        
+        _pageControl = [[UIPageControl alloc]init];
         
         _moveTime = [NSTimer scheduledTimerWithTimeInterval:chageImageTime target:self selector:@selector(animalMoveImage) userInfo:nil repeats:YES];
         _isTimeUp = NO;
@@ -72,20 +73,53 @@ static NSUInteger currentImage = 1;//记录中间图片的下标,开始总是为
 - (void)setImageNameArray:(NSArray *)imageNameArray
 {
     _imageNameArray = imageNameArray;
-    
-    _leftImageView.image = [UIImage imageNamed:_imageNameArray[0]];
-    _centerImageView.image = [UIImage imageNamed:_imageNameArray[1]];
-    _rightImageView.image = [UIImage imageNamed:_imageNameArray[2]];
-    
-    _pageControl.numberOfPages = 3;
+    _pageControl.numberOfPages = imageNameArray.count;
     _pageControl.currentPage = 0;
+    _pageControl.hidden = NO;
+    self.scrollEnabled = YES;
 
+    switch (imageNameArray.count) {
+        case 1:
+            _centerImageView.image = [UIImage imageNamed:_imageNameArray[0]];
+            _pageControl.hidden = YES;
+            self.scrollEnabled = NO;
+            [_moveTime setFireDate:[NSDate distantFuture]];
+            break;
+        case 2:
+            
+            _leftImageView.image = [UIImage imageNamed:_imageNameArray[0]];
+            _centerImageView.image = [UIImage imageNamed:_imageNameArray[1]];
+            _rightImageView.image = [UIImage imageNamed:_imageNameArray[0]];
+            [_moveTime setFireDate:[NSDate date]];
+
+            break;
+        case 3:
+            
+            _leftImageView.image = [UIImage imageNamed:_imageNameArray[0]];
+            _centerImageView.image = [UIImage imageNamed:_imageNameArray[1]];
+            _rightImageView.image = [UIImage imageNamed:_imageNameArray[2]];
+            [_moveTime setFireDate:[NSDate date]];
+
+            
+            break;
+            
+        default:
+            
+            _leftImageView.image = [UIImage imageNamed:_imageNameArray[0]];
+            _centerImageView.image = [UIImage imageNamed:_imageNameArray[1]];
+            _rightImageView.image = [UIImage imageNamed:_imageNameArray[2]];
+            [_moveTime setFireDate:[NSDate date]];
+
+            break;
+    }
+    
+    
+ 
 }
 
 #pragma mark - 计时器到时,系统滚动图片
 - (void)animalMoveImage
 {
-    
     [self setContentOffset:CGPointMake(UISCREENWIDTH * 2, 0) animated:YES];
     _isTimeUp = YES;
     [NSTimer scheduledTimerWithTimeInterval:0.4f target:self selector:@selector(scrollViewDidEndDecelerating:) userInfo:nil repeats:NO];
@@ -97,13 +131,13 @@ static NSUInteger currentImage = 1;//记录中间图片的下标,开始总是为
     if (self.contentOffset.x == 0)
     {
         currentImage = (currentImage-1)%_imageNameArray.count;
-//        _pageControl.currentPage = (_pageControl.currentPage - 1)%_imageNameArray.count;
-        _pageControl.currentPage = _imageNameArray.count - 1;
+//        CGFloat page = (_pageControl.currentPage - 1)%_imageNameArray.count;
+        _pageControl.currentPage = (_pageControl.currentPage - 1)%_imageNameArray.count;
 
     }
     else if(self.contentOffset.x == UISCREENWIDTH * 2)
     {
-        
+//        CGFloat page = (_pageControl.currentPage + 1)%_imageNameArray.count;
         currentImage = (currentImage+1)%_imageNameArray.count;
         _pageControl.currentPage = (_pageControl.currentPage + 1)%_imageNameArray.count;
     }
@@ -123,12 +157,15 @@ static NSUInteger currentImage = 1;//记录中间图片的下标,开始总是为
     
     self.contentOffset = CGPointMake(UISCREENWIDTH, 0);
     
-    //手动控制图片滚动应该取消那个三秒的计时器
+    //手动控制图片滚动应该取消那个2秒的计时器
     if (!_isTimeUp) {
         [_moveTime setFireDate:[NSDate dateWithTimeIntervalSinceNow:chageImageTime]];
     }
     _isTimeUp = NO;
+
 }
+
+
 
 @end
 

@@ -14,11 +14,8 @@
 
 @interface ViewController ()<UIScrollViewDelegate>
 
-
-
 @property (nonatomic, strong) UIScrollView*       scrollView;
 @property (nonatomic, strong) NSArray            *imageArray;
-@property (nonatomic, strong) NSMutableArray     *imageViewArray;
 
 @end
 
@@ -26,7 +23,7 @@
 
 - (NSArray *)imageArray{
     if (!_imageArray) {
-        _imageArray = @[@"001.jpg",@"002.jpg",@"003.jpg"];
+        _imageArray = @[@"001.jpg",@"002.jpg",@"003.jpg",@"002.jpg"];
     }
     return _imageArray;
 }
